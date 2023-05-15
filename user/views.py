@@ -1,0 +1,98 @@
+from django.shortcuts import render, redirect
+from django.views.generic.edit import UpdateView, CreateView
+from .models import *
+from django.contrib import messages
+from .forms import RegisterForm, LoginForm, ProfileForm
+from django.views import View
+from django.contrib.auth import authenticate, login, logout
+from django.http import JsonResponse
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import PermissionDenied
+
+
+class RegisterView(CreateView):
+    model = MyUser
+    template_name = 'user/register.html'
+    form_class = RegisterForm
+    success_url = reverse_lazy('login')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['countries'] = Country.objects.all()
+        return context
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, f"{form.cleaned_data['email']} successfully registered")
+        return response
+
+
+    def form_invalid(self, form):
+        # If form is invalid, store submitted data in context and re-render form
+        country_id = self.request.POST.get('country')
+        region_id = self.request.POST.get('region')
+        try:
+            selected_country = Country.objects.get(pk=country_id)
+            selected_region = Region.objects.get(pk=region_id)
+        except Country.DoesNotExist:
+            selected_country = None
+        except Region.DoesNotExist:
+            selected_region = None
+        context = self.get_context_data(form=form, selected_country=selected_country, selected_region=selected_region)
+        return self.render_to_response(context)
+
+
+class LoginView(View):
+    def get(self, request):
+        form = LoginForm()
+        return render(self.request, 'user/login.html', {'form': form})
+
+    def post(self, request):
+        next_page = self.request.GET.get('next')
+        form = LoginForm(self.request.POST)
+        if form.is_valid():
+            user = authenticate(email=form.cleaned_data.get('email'), password=form.cleaned_data.get('password'))
+            if user:
+                login(self.request, user)
+                if next_page:
+                    return redirect(next_page)
+                else:
+                    return redirect('home')
+            else:
+                messages.error(self.request, "Your username or password didn't match.")
+
+        return render(self.request, 'user/login.html', {'form': form})
+
+
+class LogoutView(View):
+    def get(self, request):
+        logout(self.request)
+        messages.success(self.request, 'You are logged out')
+        return redirect('login')
+
+
+class ProfileView(LoginRequiredMixin, UpdateView):
+    model = MyUser
+    form_class = ProfileForm
+    template_name = 'user/profile.html'
+    context_object_name = 'profile'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context['countries'] = Country.objects.all()
+        return context
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, "Profile updated successfully.")
+        return response
+    def post(self, request, *args, **kwargs):
+        print(1111, self.get_object())
+        if self.get_object() != request.user:
+            raise PermissionDenied()
+        return super().post(request, *args, **kwargs)
+
+
+def regions_by_country(request):
+    regions = list(Region.objects.filter(country_id=request.GET.get('country')).values())
+    return JsonResponse({"regions": regions})

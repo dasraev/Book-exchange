@@ -1,0 +1,38 @@
+header {
+	background-color: #333;
+	color: #fff;
+	padding: 20px;
+	text-align: center;
+	justify-content: center;
+}
+.navbar {
+  display: flex;
+  justify-content: center;
+  background-color: #333;
+  color: #fff;
+  padding: 10px;
+}
+
+.navbar a {
+  color: #fff;
+  text-decoration: none;
+  margin: 0 10px;
+	font-size:120% ;
+}
+.navbar .dropdown-menu {
+  background-color: #fff; /* set background color */
+  border: none; /* remove borders */
+  box-shadow: 0px 3px 6px rgba(0,0,0,0.1); /* add a box shadow */
+  padding: 0.5rem 0; /* add some padding */
+}
+
+.navbar .dropdown-item {
+  color: #212529; /* set text color */
+  padding: 0.5rem 1rem; /* add some padding */
+}
+
+.navbar .dropdown-item:hover,
+.navbar .dropdown-item:focus {
+  color: #fff; /* set text color on hover/focus */
+  background-color: #007bff; /* set background color on hover/focus */
+}

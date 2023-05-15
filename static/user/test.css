@@ -1,0 +1,18 @@
+.item {
+  margin-bottom: 10px;
+  padding: 5px;
+  text-align: center;
+  border: 1px solid #ddd;
+}
+
+.red {
+  background-color: #ffcccc;
+}
+
+.green {
+  background-color: #ccffcc;
+}
+
+.blue {
+  background-color: #ccccff;
+}

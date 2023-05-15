@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block css %}
+	<link rel="stylesheet" href="{% static 'book/home.css' %}">
+{% endblock %}
+{% block content %}
+    <h3 style="text-align: center">My {{ word }}ed books</h3>
+
+<table>
+		<tr>
+			<th>Title</th>
+			<th>Author</th>
+			<th>Owner</th>
+		</tr>
+    {% for book in page_obj %}
+        <tr>
+            <td> <a href="{{ book.get_absolute_url }}">{{ book.title }}</a></td>
+            <td>{{ book.author }}</td>
+            <td> <a href="{% url 'profile' book.owner.id %}">{{ book.owner.email }}</a></td>
+        </tr>
+    {% endfor %}
+</table>
+    {% include 'book/pagination.html' %}
+{% endblock %}

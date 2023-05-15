@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block css %}
+  <link rel="stylesheet" href="{% static 'user/profile.css' %}">
+
+{% endblock %}
+{% block content %}
+    <h1>{{ user }}</h1>
+
+<div class="container rounded bg-white mt-5 mb-5">
+    <div class="row">
+        {% if book.cover %}
+            <div class="col-md-3 border-right">
+                <div class="d-flex flex-column align-items-center text-center p-3 py-5"><img class="rounded-circle mt-5" width="150px " height="150px" src="{{ book.cover.url }}"><span class="text-black-50">book owner:</span><span class="font-weight-bold">{{ book.owner.email }}</span><span> </span></div>
+            </div>
+    {% endif %}
+            <div class="col-md-5 border-right">
+                <div class="p-3 py-5">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="text-right">Wish a Book</h4>
+                    </div>
+                <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+{% if form.non_field_errors %}
+        <div class="alert alert-danger">
+            {% for field, errors in form.non_field_errors %}
+                <strong>{{ field }}:</strong>
+                {% for error in errors %}
+                    {{ error }}<br>
+                {% endfor %}
+            {% endfor %}
+        </div>
+    {% endif %}
+
+                    <div class="col-md-12"><label class="labels">Book title <span class="required">*</span></label><input required {% if book and user != book.owner %} disabled {% endif %} name='title' type="text" value="{{ book.title }}" placeholder="book title" class="form-control"></div>
+
+                            {% if form.title.errors %}
+                              <ul class="errors">
+                                {% for error in form.title.errors %}
+                                  <li>{{ error }}</li>
+                                {% endfor %}
+                              </ul>
+                            {% endif %}
+
+                    <div class="row mt-2">
+                        <div class="col-md-12"><label class="labels">Book Author <span class="required">*</span></label><input required {% if book and user != book.owner %} disabled {% endif %} name='author' type="text" value="{{ book.author }}" class="form-control" placeholder="author"></div>
+                            {% if form.author.errors %}
+                              <ul class="errors">
+                                {% for error in form.author.errors %}
+                                  <li>{{ error }}</li>
+                                {% endfor %}
+                              </ul>
+                            {% endif %}
+
+{#                        <div class="mb-3">#}
+{#                      <label for="condition-select" class="labels">Book Condition: <span class="required">*</span></label>#}
+{#                      <select required  {% if book and user != book.owner %} disabled {% endif %} id="condition-select" name='condition' class="form-select">#}
+{#                              <option selected value="{{ book.condition }}">{{ book.condition.1 }}</option>#}
+{#                          {% for condition in conditions %}#}
+{##}
+{#                              <option value="{{ condition.0 }}" {% if condition.0 == book.condition %}selected{% endif %}  >#}
+{#                              {{ condition.1 }}#}
+{#                              </option>#}
+{##}
+{#                          {% endfor %}#}
+{#                        <!-- add more options for other countries here -->#}
+{#                      </select>#}
+{#                    </div>#}
+{#                        {% if form.condition.errors %}#}
+{#                              <ul class="errors">#}
+{#                                {% for error in form.condition.errors %}#}
+{#                                  <li>{{ error }}</li>#}
+{#                                {% endfor %}#}
+{#                              </ul>#}
+{#                            {% endif %}#}
+
+                    {% if book == None or book.owner == user %}
+                    <div class="row mt-3">
+                      <div class="form-group mt-3">
+                            <label for="id_cover_pic" class="mr-2">Upload book cover</label>
+                            <input  type="file" name="cover" accept="image/*" id="id_cover_pic">
+                      </div>
+                    {% endif %}
+                        {% if form.cover.errors %}
+                              <ul class="errors">
+                                {% for error in form.cover.errors %}
+                                  <li>{{ error }}</li>
+                                {% endfor %}
+                              </ul>
+                            {% endif %}
+                    {% if book %}
+                    <div style="margin-top: 4%;margin-left: 2%" class="form-check">
+                      <input {% if book and user != book.owner %} disabled {% endif %} name="active" class="form-check-input" type="checkbox" id="flexCheckChecked" {% if book.active %} checked {% endif %}>
+                      <label class="form-check-label" for="flexCheckChecked">
+                        (To indicate this wish-book still active or not)
+                      </label>
+                    </div>
+                    {% endif %}
+                    {% if book == None %}
+                        <div class="mt-4 text "><button style="width: 25%" class="btn btn-primary profile-button" type="submit">Save</button>
+                        </div>
+                    {% elif book.owner == user %}
+                            <div class="mt-4 text "><button style="width: 25%" class="btn btn-primary profile-button" type="submit" value="save">Save</button>
+
+                        <button style="width: 5em" type="button" class="btn btn-danger" value="delete" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                  Delete
+                        </button>
+
+                    </div>
+
+                            </div>
+                </form>
+
+
+                        {% include 'book/book_delete.html' %}
+
+                    {% endif %}
+
+
+
+            </div>
+
+        </div>
+    </div>
+    </div>
+</div>
+
+
+
+
+
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block css %}
+	<link rel="stylesheet" href="{% static 'book/home.css' %}">
+{% endblock %}
+
+{% block content %}
+
+      <!-- Example single danger button -->
+    {% if page_obj.paginator.num_pages >= 1 %}
+        <h3 style="text-align: center" >{% if wished_books %}
+            <p>Matched offered-books based on your wish</p>
+            {% else %}
+            You don't have wished books<br>
+            This is all books offered by people
+        {% endif %}</h3>
+
+<div class="btn-group">
+  <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+    Filter by
+  </button>
+  <ul class="dropdown-menu">
+      <li><a class="dropdown-item" href="?filter=country">Country</a></li>
+      </li> <a class="dropdown-item" href="?filter=region">Region</a></li>
+      </li> <a class="dropdown-item" href="?filter=education">Education Place</a></li>
+  </ul>
+</div>
+<table>
+		<tr>
+			<th>Title</th>
+			<th>Author</th>
+			<th>Owner</th>
+		</tr>
+
+    {% for book in page_obj %}
+        <tr>
+            <td> <a href="{{ book.get_absolute_url }}">{{ book.title }}</a></td>
+            <td>{{ book.author }}</td>
+            <td><a href="{% url 'profile' book.owner.id %}">{{ book.owner.email }}</a></td>
+        </tr>
+    {% endfor %}
+</table>
+{% include 'book/pagination.html' %}
+
+
+    {% else %}
+    <h1>No matched books</h1>
+    {% endif %}
+{% endblock %}
+
+
+
+
+
+
+<script>
+$(document).ready(function(){
+  $("#myInput").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $(".dropdown-menu li").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+});
+</script>

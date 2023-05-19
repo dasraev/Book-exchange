@@ -87,11 +87,11 @@ WSGI_APPLICATION = 'BookEx.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'book',
-        'USER': 'super',
-        'PASSWORD': 'dasraev05092000',
-        'HOST': 'bookexchange-3212.postgres.pythonanywhere-services.com',
-        'PORT': '13212',
+        'NAME': 'book2',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
+        'HOST': 'localhost',
+        'PORT': '5432'
     }
 }
 

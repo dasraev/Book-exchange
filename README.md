@@ -1,5 +1,5 @@
 # Book-exchange
-This is a book exchange service for people,especially for students, that they can exchange the books.
+This is a book exchange service for students that they can exchange the books by offering or asking a book they want
 
 https://bookexchange.pythonanywhere.com/
 

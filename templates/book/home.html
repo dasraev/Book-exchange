@@ -8,13 +8,22 @@
 {% block content %}
 
       <!-- Example single danger button -->
-    {% if page_obj.paginator.num_pages >= 1 %}
-        <h3 style="text-align: center" >{% if wished_books %}
-            <p>Matched offered-books based on your wish</p>
-            {% else %}
-            You don't have wished books<br>
+{#    {% if page_obj.paginator.num_pages >= 1 %}#}
+    <h3 style="text-align: center" >
+
+    {% if wished_books %}
+        {% if nomatch %}
+            Books based on your wish not found<br>
             This is all books offered by people
-        {% endif %}</h3>
+        {% else %}
+            <p>Matched offered-books based on your wish</p>
+        {% endif %}
+    {% else %}
+        You don't have wished books,please wish a book<br>
+        This is all books offered by people
+
+    {% endif %}
+    </h3>
 
 <div class="btn-group">
   <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
@@ -44,9 +53,7 @@
 {% include 'book/pagination.html' %}
 
 
-    {% else %}
-    <h1>No matched books</h1>
-    {% endif %}
+
 {% endblock %}
 
 

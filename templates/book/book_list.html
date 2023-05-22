@@ -5,7 +5,22 @@
 	<link rel="stylesheet" href="{% static 'book/home.css' %}">
 {% endblock %}
 {% block content %}
-    <h3 style="text-align: center">My {{ word }}ed books</h3>
+    {% if word == 'all' %}
+        <h3 style="text-align: center">All books</h3>
+        <div class="btn-group">
+  <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+    Filter by
+  </button>
+  <ul class="dropdown-menu">
+      <li><a class="dropdown-item" href="?filter=all">All books</a></li>
+      </li> <a class="dropdown-item" href="?filter=offer">Offered books</a></li>
+      </li> <a class="dropdown-item" href="?filter=wish">Wished books</a></li>
+  </ul>
+</div>
+    {% else %}
+        <h3 style="text-align: center">My {{ word }}ed books</h3>
+    {% endif %}
+
 
 <table>
 		<tr>

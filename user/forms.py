@@ -3,10 +3,13 @@ from .models import MyUser, Region
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, UserChangeForm
 from django.contrib.auth import get_user_model
 from django.contrib.auth import password_validation
-
+from .models import Country
 
 class RegisterForm(UserCreationForm):
     email = forms.EmailField()
+    country = forms.ModelChoiceField(queryset=Country.objects.all())
+    region = forms.ModelChoiceField(queryset=Region.objects.all())
+
 
     class Meta:
         model = get_user_model()
@@ -16,6 +19,7 @@ class RegisterForm(UserCreationForm):
         if MyUser.objects.filter(email=self.cleaned_data['email']).exists():
             raise forms.ValidationError(f"The {self.cleaned_data['email']} has already registerd")
         return self.cleaned_data['email']
+
 
     def clean_region(self, *args, **kwargs):
         if self.cleaned_data.get('region') not in Region.objects.filter(country=self.cleaned_data.get('country')):
@@ -35,7 +39,13 @@ class LoginForm(forms.Form):
 
 class ProfileForm(UserChangeForm):
     email = forms.EmailField()
+    country = forms.ModelChoiceField(required=True,
+                                     queryset=Country.objects.all(),
 
+                                     )
+    region = forms.ModelChoiceField(required=True,
+                                    queryset=Region.objects.all(),
+                                    )
     class Meta:
         model = MyUser
         fields = ['email', 'first_name', 'last_name', 'country', 'region', 'education', 'profile_pic', 'gender', 'age']

@@ -8,7 +8,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
-
+from django.http import HttpResponse
 
 class RegisterView(CreateView):
     model = MyUser
@@ -28,19 +28,8 @@ class RegisterView(CreateView):
 
 
     def form_invalid(self, form):
-        # If form is invalid, store submitted data in context and re-render form
-        country_id = self.request.POST.get('country')
-        region_id = self.request.POST.get('region')
-        try:
-            selected_country = Country.objects.get(pk=country_id)
-            selected_region = Region.objects.get(pk=region_id)
-        except Country.DoesNotExist:
-            selected_country = None
-        except Region.DoesNotExist:
-            selected_region = None
-        context = self.get_context_data(form=form, selected_country=selected_country, selected_region=selected_region)
+        context = self.get_context_data(form=form, selected_country=form.cleaned_data.get('country'), selected_region=form.cleaned_data.get('region'))
         return self.render_to_response(context)
-
 
 class LoginView(View):
     def get(self, request):
@@ -86,6 +75,9 @@ class ProfileView(LoginRequiredMixin, UpdateView):
         response = super().form_valid(form)
         messages.success(self.request, "Profile updated successfully.")
         return response
+
+
+
     def post(self, request, *args, **kwargs):
         print(1111, self.get_object())
         if self.get_object() != request.user:

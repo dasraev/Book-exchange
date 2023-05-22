@@ -246,3 +246,31 @@ class HomeView(generics.ListAPIView, generics.GenericAPIView):
         paginated_queryset = paginator.paginate_queryset(queryset, request)
         serializer = self.serializer_class(paginated_queryset, many=True)
         return paginator.get_paginated_response({'wished_books': bool(self.wished_books), 'books': serializer.data})
+
+class AllBookListView(generics.ListAPIView):
+    model = Book
+    serializer_class = serializers.BookSerializer
+    def get_queryset(self):
+        if self.request.query_params.get('status'):
+            if self.request.query_params.get('status').lower()=='wish':
+                books = Book.objects.filter(status='W').select_related('owner').order_by('-date')
+            elif self.request.query_params.get('status').lower() == 'offer':
+                books = Book.objects.filter(status='O').select_related('owner').order_by('-date')
+            else:
+                raise ValidationError('status should be wish or offer')
+
+        else:
+            books = Book.objects.all().select_related('owner').order_by('-date')
+        return books
+
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter('status', openapi.IN_QUERY, description='Enter status or just leave it blank to see all books',
+                              type=openapi.TYPE_STRING),
+
+        ]
+    )
+    def get(self, request, *args, **kwargs):
+        books = self.get_queryset()
+        serializer = self.get_serializer(books,many=True)
+        return Response(serializer.data)

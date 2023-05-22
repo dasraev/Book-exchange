@@ -23,11 +23,12 @@
 
     <nav class="navbar">
 
-  <a href="{% url 'home' %}">Home</a>
+  <a href="{% url 'home' %}"><b>Home</b></a>
   <a href="{% url 'offer' %}">Offer a book</a>
   <a href="{% url 'wish' %}">Wish a book</a>
-  <a href="{% url 'offerlist' %}">Offered books</a>
-  <a href="{% url 'wishlist' %}">Wished books</a>
+  <a href="{% url 'offerlist' %}">My Offered books</a>
+  <a href="{% url 'wishlist' %}">My Wished books</a>
+  <a href="{% url 'all-books' %}"><b>All Books</b></a>
 {% if user.is_authenticated %}
     <div class="dropdown">
   <button class="btn btn-secondary dropdown-toggle" style="width: 100%;font-size: 13px" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">

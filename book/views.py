@@ -25,6 +25,7 @@ class HomeView(LoginRequiredMixin, ListView):
         filter_params = self.request.GET.get('filter')  # region,education
         self.wished_books = Book.objects.filter(owner=self.request.user, status='W', active=True)
         offered_books = Book.objects.filter(status='O', active=True).select_related('owner')
+
         try:
             if filter_params == 'country':
                 offered_books = offered_books.filter(owner__country=self.request.user.country)
@@ -34,17 +35,22 @@ class HomeView(LoginRequiredMixin, ListView):
                 offered_books = offered_books.filter(owner__education__trigram_similar=self.request.user.education)
         except ValueError:
             pass
+
         titles_list = list(self.wished_books.values_list('title', flat=True))
         queries = [Q(title__trigram_similar=title) for title in titles_list]  # create a list of Q objects
         combined_query = queries.pop() if queries else Q()  # pop the first Q object from the list, or create an empty Q object if the list is empty
         for query in queries:
             combined_query |= query
-        books_list = offered_books.filter(combined_query).order_by('-date')
-        return books_list
+        self.books_list = offered_books.filter(combined_query).order_by('-date')
+        if not self.books_list:
+            return offered_books
+        return self.books_list
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data()
         context['wished_books'] = self.wished_books
+        if not self.books_list:
+            context['nomatch'] = True
         context['filter_params'] = self.request.GET.get('filter')
         return context
 
@@ -60,7 +66,6 @@ class OfferCreateView(LoginRequiredMixin, CreateView):
         return context
 
     def form_valid(self, form):
-        print(444444, form.cleaned_data)
         form.instance.owner = self.request.user
         form.instance.status = 'O'
         form.instance.active = True
@@ -143,7 +148,6 @@ class BookDeleteView(LoginRequiredMixin, DeleteView):
         referer = self.request.META.get('HTTP_REFERER')
         if referer and 'offer' in referer:
             return reverse_lazy('offerlist')
-            print(100000)
         elif referer and 'wish' in referer:
             return reverse_lazy('wishlist')
         else:
@@ -166,9 +170,31 @@ class BookListView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data()
+        context['filter_params'] = self.request.GET.get('filter')
+
         context['word'] = self.word
         return context
 
+class AllBookListView(LoginRequiredMixin, ListView):
+    model = Book
+    template_name = 'book/book_list.html'
+    paginate_by = 5
+    def get_queryset(self):
+        books = Book.objects.all().select_related('owner')
+        filter_params = self.request.GET.get('filter')  # region,education
+        try:
+            if filter_params == 'wish':
+                books = books.filter(status='W')
+            elif filter_params == 'offer':
+                books = books.filter(status='O')
+        except ValueError:
+            pass
+        return books
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data()
+        context['filter_params'] = self.request.GET.get('filter')
+        context['word'] = 'all'
 
+        return context
 def page_not_found_view(request, exception):
     return render(request, '404.html', status=404)

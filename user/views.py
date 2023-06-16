@@ -5,7 +5,7 @@ from django.contrib import messages
 from .forms import RegisterForm, LoginForm, ProfileForm
 from django.views import View
 from django.contrib.auth import authenticate, login, logout
-from django.http import JsonResponse, HttpResponseRedirect
+from django.http import JsonResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.views import PasswordResetView

@@ -10,8 +10,6 @@ from user.models import Region, Country
 from book.models import Book
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.core.mail import send_mail
-from django.conf import settings
 from rest_framework.reverse import reverse
 from django.contrib.auth.tokens import default_token_generator
 from rest_framework.response import Response
@@ -23,7 +21,7 @@ from user.tasks import send_password_reset_email
 
 User = get_user_model()
 
-
+                        ################# USER ###########################
 class RegisterView(generics.GenericAPIView):
     serializer_class = serializers.RegisterSerializer
 
@@ -157,8 +155,8 @@ class CountryListView(generics.ListAPIView):
     queryset = Country.objects.all()
     serializer_class = serializers.CountrySerializer
 
-    # BOOKS
 
+                ######################## BOOK ##################################
 
 class BookListCreateView(generics.ListCreateAPIView):
     serializer_class = serializers.BookSerializer

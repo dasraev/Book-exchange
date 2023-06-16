@@ -10,8 +10,6 @@ from user.models import Region, Country
 from book.models import Book
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.core.mail import send_mail
-from django.conf import settings
 from rest_framework.reverse import reverse
 from django.contrib.auth.tokens import default_token_generator
 from rest_framework.response import Response
@@ -19,10 +17,11 @@ from rest_framework.pagination import PageNumberPagination
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from rest_framework.exceptions import ValidationError
+from user.tasks import send_password_reset_email
 
 User = get_user_model()
 
-
+                        ################# USER ###########################
 class RegisterView(generics.GenericAPIView):
     serializer_class = serializers.RegisterSerializer
 
@@ -75,9 +74,8 @@ class PasswordResetView(generics.GenericAPIView):
                                 request=request)
             subject = 'Password reset request'
             message = f'Hi {user.email},\n\nPlease click the link below to reset your password:\n{reset_url}'
-            from_email = settings.EMAIL_HOST_USER
-            to_email = [email]
-            send_mail(subject, message, from_email, to_email, fail_silently=False)
+            # to_email = [email]
+            send_password_reset_email.delay(subject, message, email)
         return Response(status=status.HTTP_200_OK)
 
 
@@ -157,8 +155,8 @@ class CountryListView(generics.ListAPIView):
     queryset = Country.objects.all()
     serializer_class = serializers.CountrySerializer
 
-    # BOOKS
 
+                ######################## BOOK ##################################
 
 class BookListCreateView(generics.ListCreateAPIView):
     serializer_class = serializers.BookSerializer
@@ -182,7 +180,6 @@ class BookListCreateView(generics.ListCreateAPIView):
         paginated_queryset = paginator.paginate_queryset(queryset, request)
         serializer = self.serializer_class(paginated_queryset, many=True)
         return paginator.get_paginated_response(serializer.data)
-
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -247,12 +244,14 @@ class HomeView(generics.ListAPIView, generics.GenericAPIView):
         serializer = self.serializer_class(paginated_queryset, many=True)
         return paginator.get_paginated_response({'wished_books': bool(self.wished_books), 'books': serializer.data})
 
+
 class AllBookListView(generics.ListAPIView):
     model = Book
     serializer_class = serializers.BookSerializer
+
     def get_queryset(self):
         if self.request.query_params.get('status'):
-            if self.request.query_params.get('status').lower()=='wish':
+            if self.request.query_params.get('status').lower() == 'wish':
                 books = Book.objects.filter(status='W').select_related('owner').order_by('-date')
             elif self.request.query_params.get('status').lower() == 'offer':
                 books = Book.objects.filter(status='O').select_related('owner').order_by('-date')
@@ -265,12 +264,13 @@ class AllBookListView(generics.ListAPIView):
 
     @swagger_auto_schema(
         manual_parameters=[
-            openapi.Parameter('status', openapi.IN_QUERY, description='Enter status or just leave it blank to see all books',
+            openapi.Parameter('status', openapi.IN_QUERY,
+                              description='Enter status or just leave it blank to see all books',
                               type=openapi.TYPE_STRING),
 
         ]
     )
     def get(self, request, *args, **kwargs):
         books = self.get_queryset()
-        serializer = self.get_serializer(books,many=True)
+        serializer = self.get_serializer(books, many=True)
         return Response(serializer.data)

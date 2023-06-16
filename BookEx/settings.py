@@ -35,7 +35,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'drf_yasg',
-
     'crispy_forms',
     "django.contrib.postgres",  # new
     'book',
@@ -44,7 +43,7 @@ INSTALLED_APPS = [
     "debug_toolbar",
     'rest_framework',
     'rest_framework.authtoken',
-
+    'celery'
 ]
 
 MIDDLEWARE = [
@@ -151,6 +150,7 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'testdasraev@gmail.com'
 EMAIL_HOST_PASSWORD = 'vjwsgwuwzqimkysi'
 
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 INTERNAL_IPS = [
     # ...
@@ -177,3 +177,9 @@ SWAGGER_SETTINGS = {
 }
 
 
+
+
+
+# Celery settings
+CELERY_BROKER_URL = "redis://localhost:6379"
+CELERY_RESULT_BACKEND = "redis://localhost:6379"

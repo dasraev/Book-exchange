@@ -8,7 +8,13 @@ from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
-from django.http import HttpResponse
+from django.contrib.auth.views import PasswordResetView
+from user.tasks import send_password_reset_email
+from django.urls import reverse
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+
 
 class RegisterView(CreateView):
     model = MyUser
@@ -26,10 +32,11 @@ class RegisterView(CreateView):
         messages.success(self.request, f"{form.cleaned_data['email']} successfully registered")
         return response
 
-
     def form_invalid(self, form):
-        context = self.get_context_data(form=form, selected_country=form.cleaned_data.get('country'), selected_region=form.cleaned_data.get('region'))
+        context = self.get_context_data(form=form, selected_country=form.cleaned_data.get('country'),
+                                        selected_region=form.cleaned_data.get('region'))
         return self.render_to_response(context)
+
 
 class LoginView(View):
     def get(self, request):
@@ -76,8 +83,6 @@ class ProfileView(LoginRequiredMixin, UpdateView):
         messages.success(self.request, "Profile updated successfully.")
         return response
 
-
-
     def post(self, request, *args, **kwargs):
         print(1111, self.get_object())
         if self.get_object() != request.user:
@@ -88,3 +93,19 @@ class ProfileView(LoginRequiredMixin, UpdateView):
 def regions_by_country(request):
     regions = list(Region.objects.filter(country_id=request.GET.get('country')).values())
     return JsonResponse({"regions": regions})
+
+
+class CustomPasswordResetView(PasswordResetView):
+    def form_valid(self, form):
+        email = form.cleaned_data.get('email')
+        user = MyUser.objects.get(email=email)
+
+        token_generator = default_token_generator
+        token = token_generator.make_token(user)
+        uidb64 = urlsafe_base64_encode(force_bytes(user.id))
+        reset_link = self.request.build_absolute_uri(
+            reverse("password_reset_confirm", kwargs={"uidb64": uidb64, "token": token}))
+        subject = 'Password reset request'
+        message = f'Hi {user.email},\n\nPlease click the link below to reset your password:\n{reset_link}'
+        send_password_reset_email.delay(subject, message, email)  # Trigger Celery task
+        return redirect('password_reset_done')

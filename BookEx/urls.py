@@ -31,6 +31,7 @@ urlpatterns = [
     path('', HomeView.as_view(), name='home'),
     path('', include('user.urls')),
     path('book/', include('book.urls')),
+    path('chat/', include('chat.urls')),
     path('api/', include('api.urls')),
     path('__debug__/', include('debug_toolbar.urls')),
 

@@ -43,7 +43,9 @@ INSTALLED_APPS = [
     "debug_toolbar",
     'rest_framework',
     'rest_framework.authtoken',
-    'celery'
+    'celery',
+    'chat',
+    'channels'
 ]
 
 MIDDLEWARE = [
@@ -77,6 +79,8 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'BookEx.wsgi.application'
+ASGI_APPLICATION = 'BookEx.asgi.application'
+
 
 
 # Database
@@ -91,6 +95,11 @@ DATABASES = {
         'PASSWORD': 'dasraev05092000',
         'HOST': 'bookexchange-3212.postgres.pythonanywhere-services.com',
         'PORT': '13212',
+    }
+}
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer'
     }
 }
 

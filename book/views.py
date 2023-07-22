@@ -73,7 +73,7 @@ class OfferCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class OfferEditView(LoginRequiredMixin, UpdateView):
+class OfferEditView(UpdateView):
     model = Book
     template_name = 'book/offer.html'
     form_class = BookForm
@@ -110,7 +110,7 @@ class WishCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class WishEditView(LoginRequiredMixin, UpdateView):
+class WishEditView(UpdateView):
     model = Book
     template_name = 'book/wish.html'
     form_class = BookForm
@@ -175,7 +175,7 @@ class BookListView(LoginRequiredMixin, ListView):
         context['word'] = self.word
         return context
 
-class AllBookListView(LoginRequiredMixin, ListView):
+class AllBookListView(ListView):
     model = Book
     template_name = 'book/book_list.html'
     paginate_by = 5

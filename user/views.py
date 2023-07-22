@@ -67,7 +67,7 @@ class LogoutView(View):
         return redirect('login')
 
 
-class ProfileView(LoginRequiredMixin, UpdateView):
+class ProfileView(UpdateView):
     model = MyUser
     form_class = ProfileForm
     template_name = 'user/profile.html'

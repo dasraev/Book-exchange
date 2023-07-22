@@ -1,23 +1,31 @@
 {% load static %}
+<!DOCTYPE html>
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title>{% block title %}{% endblock %}Djangochat</title>
       <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
       <link rel="stylesheet" href="{% static 'user/base.css' %}">
-      {% block css %}
-      {% endblock %}
-    <!-- Bootstrap CSS -->
-    {% block js %}
-    {% endblock %}
-    <title>Book Exchange</title>
-  </head>
-  <body>
+      <link rel="stylesheet" href="{% static 'chat/style.css' %}">
+
+        <script src="https://cdn.tailwindcss.com"></script>
+{#        <script src="{% static 'chat/script.js' %}"></script>#}
+
+        <style>
+            .chat-messages {
+                height: 400px;
+                overflow-y: auto;
+            }
+        </style>
+    </head>
+
+    <body class="bg-teal-600">
+
   	<header>
-		<h2>Book Exchange</h2>
+		<h2 style="font-size: 30px;">Book Exchange</h2>
 	</header>
 
 
@@ -34,6 +42,8 @@
 
       <a href="{% url 'rooms' %}"><b>Chat</b></a>
 
+
+
     <div class="dropdown">
   <button class="btn btn-secondary dropdown-toggle" style="width: 100%;font-size: 13px" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
     Welcome, {{ user }}
@@ -44,6 +54,8 @@
 
   </ul>
 </div>
+
+
     {% else %}
       <a href="{% url 'all-books' %}"><b>All Books</b></a>
 
@@ -55,7 +67,7 @@
 </nav>
 
     <br>
-        {% if messages %}
+    {% if messages %}
             <h1>{{ messages.tags }}</h1>
         {% for message in messages %}
             <div class="alert alert-dismissible fade show {{ message.tags }}" role="alert">
@@ -64,14 +76,17 @@
         <li>{{ message }}</li>
         {% endfor %}
     </ul>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" style="color: black" aria-label="Close"></button>
 </div>
 {% endif %}
 
+        {% block content %}
+        {% endblock %}
 
-    {% block content %}
-    {% endblock %}
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+        {% block scripts %}
+        {% endblock %}
 
-  </body>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+    </body>
 </html>

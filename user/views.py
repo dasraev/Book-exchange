@@ -14,7 +14,7 @@ from django.urls import reverse
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
-
+from django.shortcuts import get_object_or_404
 
 class RegisterView(CreateView):
     model = MyUser
@@ -98,8 +98,11 @@ def regions_by_country(request):
 class CustomPasswordResetView(PasswordResetView):
     def form_valid(self, form):
         email = form.cleaned_data.get('email')
-        user = MyUser.objects.get(email=email)
-
+        try:
+            user = MyUser.objects.get(email=email)
+        except MyUser.DoesNotExist:
+            messages.warning(self.request,'There is no such registered user')
+            return redirect('password-reset')
         token_generator = default_token_generator
         token = token_generator.make_token(user)
         uidb64 = urlsafe_base64_encode(force_bytes(user.id))

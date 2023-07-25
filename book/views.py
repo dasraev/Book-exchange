@@ -32,7 +32,8 @@ class HomeView(LoginRequiredMixin, ListView):
             elif filter_params == 'region':
                 offered_books = offered_books.filter(owner__region=self.request.user.region)
             elif filter_params == 'education':
-                offered_books = offered_books.filter(owner__education__trigram_similar=self.request.user.education)
+                print('CHECKING',self.request.user.education)
+                offered_books = offered_books.filter(owner__education=self.request.user.education)
         except ValueError:
             pass
 

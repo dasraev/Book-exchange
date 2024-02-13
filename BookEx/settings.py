@@ -22,7 +22,7 @@ SECRET_KEY = 'django-insecure-5gotzi*)$b_rc7$j5z^5gzh__rgc&x-0g_v1i3*z!w(#5__(@e
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1','0.0.0.0','localhost','.pythonanywhere.com','bookexchange.pythonanywhere.com']
+ALLOWED_HOSTS = ['127.0.0.1','0.0.0.0','localhost','.pythonanywhere.com','bookexchange.pythonanywhere.com','3.90.113.224']
 
 
 # Application definition

@@ -20,7 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-5gotzi*)$b_rc7$j5z^5gzh__rgc&x-0g_v1i3*z!w(#5__(@e'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1','0.0.0.0','localhost','.pythonanywhere.com','bookexchange.pythonanywhere.com']
 
@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'celery',
     'chat',
-    'channels'
+    'channels',
+
 ]
 
 MIDDLEWARE = [
@@ -87,14 +88,30 @@ ASGI_APPLICATION = 'BookEx.asgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'book',
+#         'USER': 'postgres',
+#         'PASSWORD': 'postgres',
+#         'HOST': 'localhost',
+#         'PORT': '5432',
+#     }
+# }
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'book',
+#         'USER': 'super',
+#         'PASSWORD': 'dasraev05092000',
+#         'HOST': 'bookexchange-3212.postgres.pythonanywhere-services.com',
+#         'PORT': '13212',
+#     }
+# }
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'book',
-        'USER': 'super',
-        'PASSWORD': 'dasraev05092000',
-        'HOST': 'bookexchange-3212.postgres.pythonanywhere-services.com',
-        'PORT': '13212',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 CHANNEL_LAYERS = {
@@ -122,12 +139,14 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+# TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Tashkent'
 
 USE_I18N = True
 
@@ -142,8 +161,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 STATIC_URL = 'static/'
-STATIC_ROOT = BASE_DIR /'static'
-
+# STATIC_ROOT = BASE_DIR /'static'
+STATICFILES_DIRS = [BASE_DIR /'static']
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
@@ -189,6 +208,29 @@ SWAGGER_SETTINGS = {
 
 
 
+
 # Celery settings
-CELERY_BROKER_URL = "redis://localhost:6360"
-CELERY_RESULT_BACKEND = "redis://localhost:6360"
+CELERY_BROKER_URL = "redis://localhost:6379"
+CELERY_RESULT_BACKEND = "redis://localhost:6379"
+
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+
+# myproject/settings.py
+
+# Celery Configuration Options
+CELERY_TIMEZONE = 'UTC'
+
+# Celery Beat Configuration Options
+# myproject/settings.py
+from celery.schedules import crontab
+
+# Celery Beat Configuration Options
+CELERY_BEAT_SCHEDULE = {
+    'get_users_daily': {
+        'task': 'api.tasks.get_users',  # Path to your Celery task
+        'schedule': crontab(hour=10-5, minute=30),  # Run the task every day at 8 am
+    },
+}
+

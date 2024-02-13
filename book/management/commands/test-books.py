@@ -4,7 +4,8 @@ from book.models import Book
 from django.contrib.auth import get_user_model
 User = get_user_model()
 
-user = User.objects.filter(is_superuser=True).first()
+user1 = User.objects.first()
+user2 = User.objects.last()
 
 class Command(BaseCommand):
     help = 'Create Test books from JSON file'
@@ -17,9 +18,9 @@ class Command(BaseCommand):
         data = json.loads(data)
 
         for book in data:
-            Book.objects.create(title=book['title'],author=book['author'],owner=user,
+            Book.objects.create(title=book['title'],author=book['author'],owner=user1,
                                 status='O')
-            Book.objects.create(title=book['title'], author=book['author'], owner=user,
+            Book.objects.create(title=book['title'], author=book['author'], owner=user2,
                                 status='W')
 
 

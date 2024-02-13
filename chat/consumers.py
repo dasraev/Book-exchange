@@ -7,7 +7,6 @@ User = get_user_model()
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-
         self.name = self.scope['url_route']['kwargs']['roomName']
         email1 = self.name.split('-')[0]
         email2 = self.name.split('-')[1]

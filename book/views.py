@@ -24,7 +24,7 @@ class HomeView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         filter_params = self.request.GET.get('filter')  # region,education
         self.wished_books = Book.objects.filter(owner=self.request.user, status='W', active=True)
-        offered_books = Book.objects.filter(status='O', active=True).select_related('owner')
+        offered_books = Book.objects.filter(status='O', active=True).exclude(owner=self.request.user).select_related('owner')
 
         try:
             if filter_params == 'country':
@@ -38,7 +38,9 @@ class HomeView(LoginRequiredMixin, ListView):
             pass
 
         titles_list = list(self.wished_books.values_list('title', flat=True))
-        queries = [Q(title__trigram_similar=title) for title in titles_list]  # create a list of Q objects
+        queries = [Q(title=title) for title in titles_list]  # create a list of Q objects
+
+        # queries = [Q(title__trigram_similar=title) for title in titles_list]  # create a list of Q objects
         combined_query = queries.pop() if queries else Q()  # pop the first Q object from the list, or create an empty Q object if the list is empty
         for query in queries:
             combined_query |= query

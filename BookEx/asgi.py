@@ -14,8 +14,11 @@ from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
 
 import chat.routing
+import django
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'BookEx.settings')
+django.setup()
+
 
 application = ProtocolTypeRouter({
     "http": get_asgi_application(),
